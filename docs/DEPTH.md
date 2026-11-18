@@ -12,7 +12,7 @@
 | M2 曲线校核 | 校验曲线及测次冲突 | `/api/m2` | `app/modules/m2_curve/rules.py` `app/modules/m2_curve/service.py` | `tests/test_m2_curve.py` |
 | M3 流量积分 | 梯形积分并定位缺口 | `/api/m3` | `app/modules/m3_integrate/rules.py` `app/modules/m3_integrate/service.py` | `tests/test_m3_integrate.py` |
 | M4 库容换算 | 按曲线分段换算库容 | `/api/m4` | `app/modules/m4_storage/rules.py` `app/modules/m4_storage/service.py` | `tests/test_m4_storage.py` |
-| M5 日收支 | 跨午夜切分日水量账 | `/api/m5` | `app/modules/m5_budget/rules.py` `app/modules/m5_budget/service.py` | `tests/test_m5_budget.py` |
+| M5 日收支 | 跨午夜切分日水量账，凭证日与到达日并列 | `/api/m5` | `app/modules/m5_budget/rules.py` `app/modules/m5_budget/service.py` | `tests/test_m5_budget.py` `tests/test_m5_publish.py` |
 | M6 异常复核 | 按缺测优先裁决超差 | `/api/m6` | `app/modules/m6_review/rules.py` `app/modules/m6_review/service.py` | `tests/test_m6_review.py` |
 | M7 重算留痕 | 核对总积分与重算水位 | `/api/m7` | `app/modules/m7_trace/rules.py` `app/modules/m7_trace/service.py` | `tests/test_m7_trace.py` |
 
@@ -28,6 +28,7 @@
 | TRAP-14 | 同刻水文矛盾 | 静默填补或算错 | 明确隔离和守恒 | `app/modules/m2_curve/rules.py` | `tests/test_m2_curve.py::test_real_conflict` |
 | TRAP-15 | 升每秒换算 | 静默填补或算错 | 明确隔离和守恒 | `app/modules/m2_curve/rules.py` | `tests/test_m2_curve.py::test_unit_conversion` |
 | TRAP-23 | 午夜切分 | 静默填补或算错 | 明确隔离和守恒 | `app/modules/m5_budget/rules.py` | `tests/test_m5_budget.py::test_midnight_split` |
+| TRAP-32 | 凭证日与到达日混用 | 照抄测站日期使跨午夜来水落错日；或直接搬移改写已签发回执 | 凭证日冻结日期与总量，到达日按传播时延单独归集，两套口径并列表述 | `app/modules/m5_budget/rules.py` `app/store.py` | `tests/test_m5_budget.py::test_voucher_date_and_total_frozen` `tests/test_m5_publish.py::test_publish_resumes_after_confirmed_day` |
 
 ## 对账规则
 
@@ -36,4 +37,4 @@
 
 ## 已知不覆盖
 
-库容曲线采用线性分段，不作范围外推；流量与水位相邻点间线性变化。未建蒸发降雨及地下渗漏模型，收支差保留待人工归因。
+库容曲线采用线性分段，不作范围外推；流量与水位相邻点间线性变化。未建蒸发降雨及地下渗漏模型，收支差保留待人工归因。气象补水与外控调度不纳入日收支。
